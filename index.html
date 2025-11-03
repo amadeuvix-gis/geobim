@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>3D WebScene Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.30/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.30/"></script>
+
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      #infoPanel {
+        width: 350px;
+        height: 100%;
+        background-color: #ffffffdd;
+        overflow: auto;
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 99;
+        padding: 10px;
+        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+        display: none;
+        border-radius: 4px;
+      }
+
+      #toggleInfoPanel {
+        position: absolute;
+        top: 10px;
+        right: 360px;
+        background: white;
+        border-radius: 6px;
+        padding: 5px 10px;
+        cursor: pointer;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        z-index: 100;
+      }
+
+      #toggleBookmarksPanel {
+        position: absolute;
+        top: 50px;
+        left: 15px;
+        background: white;
+        border-radius: 6px;
+        padding: 5px 10px;
+        cursor: pointer;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        z-index: 100;
+      }
+
+      .slideItem {
+        cursor: pointer;
+        margin-bottom: 4px;
+        border-bottom: 1px solid #ddd;
+        padding: 3px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+
+    <!-- Info panel -->
+    <div id="toggleInfoPanel">🛈 Info Panel</div>
+    <div id="infoPanel">
+      <h3>Object Information</h3>
+      <div id="featureInfo">Click on an object in the scene.</div>
+      <h3>Feature Table</h3>
+      <div id="featureTableDiv"></div>
+    </div>
+
+    <!-- Bookmarks toggle button -->
+    <div id="toggleBookmarksPanel">📑 Bookmarks</div>
+
+    <script>
+      require([
+        "esri/WebScene",
+        "esri/views/SceneView",
+        "esri/widgets/Legend",
+        "esri/widgets/LayerList",
+        "esri/widgets/Daylight",
+        "esri/widgets/Expand",
+        "esri/widgets/Measurement",
+        "esri/widgets/FeatureTable"
+      ], function (
+        WebScene,
+        SceneView,
+        Legend,
+        LayerList,
+        Daylight,
+        Expand,
+        Measurement,
+        FeatureTable
+      ) {
+        // 1️⃣ WebScene
+        const webscene = new WebScene({
+          portalItem: {
+            id: "d841bada1a9a4a389a083fbc8102068d"
+          }
+        });
+
+        // 2️⃣ SceneView
+        const view = new SceneView({
+          container: "viewDiv",
+          map: webscene,
+          qualityProfile: "high",
+          environment: {
+            lighting: { directShadowsEnabled: true }
+          }
+        });
+
+        // 3️⃣ Standard widgets (as buttons)
+        const legendExpand = new Expand({
+          view,
+          content: new Legend({ view }),
+          expandIconClass: "esri-icon-legend",
+          expanded: false,
+          expandTooltip: "Show Legend"
+        });
+
+        const layerListExpand = new Expand({
+          view,
+          content: new LayerList({ view }),
+          expandIconClass: "esri-icon-layers",
+          expanded: false,
+          expandTooltip: "Show Layers"
+        });
+
+        const daylightExpand = new Expand({
+          view,
+          content: new Daylight({ view }),
+          expandIconClass: "esri-icon-lightbulb",
+          expanded: false,
+          expandTooltip: "Daylight Control"
+        });
+
+        const measurementExpand = new Expand({
+          view,
+          content: new Measurement({ view, activeTool: null }),
+          expandIconClass: "esri-icon-measure-line",
+          expanded: false,
+          expandTooltip: "3D Measurement"
+        });
+
+        view.ui.add(
+          [layerListExpand, legendExpand, daylightExpand, measurementExpand],
+          "top-left"
+        );
+
+        // 4️⃣ Bookmarks panel
+        let bookmarksPanel;
+        let bookmarksDiv = document.createElement("div");
+        bookmarksDiv.style.maxHeight = "250px";
+        bookmarksDiv.style.overflowY = "auto";
+        bookmarksDiv.style.display = "none";
+
+        webscene.when(() => {
+          if (webscene.presentation?.slides?.length > 0) {
+            webscene.presentation.slides.forEach((slide) => {
+              const slideElement = document.createElement("div");
+              slideElement.className = "slideItem esri-widget";
+              slideElement.textContent = slide.title.text;
+              slideElement.onclick = () => slide.applyTo(view);
+              bookmarksDiv.appendChild(slideElement);
+            });
+
+            // Add to view as Expand
+            bookmarksPanel = new Expand({
+              view,
+              content: bookmarksDiv,
+              expandIconClass: "esri-icon-bookmark",
+              expanded: false,
+              expandTooltip: "Bookmarks"
+            });
+            view.ui.add(bookmarksPanel, "top-left");
+
+            // Show bookmarks panel initially
+            bookmarksDiv.style.display = "block";
+            bookmarksPanel.expand();
+          }
+        });
+
+        // Button to toggle bookmarks panel
+        const toggleBookmarksBtn = document.getElementById("toggleBookmarksPanel");
+        toggleBookmarksBtn.addEventListener("click", () => {
+          if (bookmarksPanel) {
+            if (bookmarksPanel.expanded) {
+              bookmarksPanel.collapse();
+            } else {
+              bookmarksPanel.expand();
+            }
+          }
+        });
+
+        // 5️⃣ Info panel
+        const infoPanel = document.getElementById("infoPanel");
+        const toggleInfoPanel = document.getElementById("toggleInfoPanel");
+        const featureInfo = document.getElementById("featureInfo");
+        const featureTableDiv = document.getElementById("featureTableDiv");
+        let featureTable;
+
+        toggleInfoPanel.addEventListener("click", () => {
+          infoPanel.style.display =
+            infoPanel.style.display === "none" ? "block" : "none";
+        });
+
+        view.when(() => {
+          view.on("click", (event) => {
+            view.hitTest(event).then((response) => {
+              const graphic = response.results.find((r) => r.graphic);
+              if (graphic) {
+                const attributes = graphic.graphic.attributes;
+                featureInfo.innerHTML = `
+                  <b>Layer:</b> ${graphic.graphic.layer.title}<br>
+                  <b>Attributes:</b><br>
+                  <pre>${JSON.stringify(attributes, null, 2)}</pre>
+                `;
+                if (featureTable) featureTable.destroy();
+                featureTable = new FeatureTable({
+                  view,
+                  layer: graphic.graphic.layer,
+                  container: featureTableDiv
+                });
+              }
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
