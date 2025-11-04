@@ -19,14 +19,25 @@ html, body, #viewDiv {
 #header {
   position: absolute; top:0; left:0; right:0;
   height: 60px; background: #111;
-  color: #fff; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
+  color: #fff; display: flex; justify-content: space-between;
+  align-items: center; padding: 0 15px;
   z-index: 130; box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
-#header h1 { margin: 0; font-size: 1.4em; }
-#header h2 { margin: 0; font-size: 0.9em; font-weight: normal; color: #aaa; }
+#header h1 { margin: 0; font-size: 1.3em; }
+#header h2 { margin: 0; font-size: 0.85em; font-weight: normal; color: #aaa; }
+#titleBlock { display: flex; flex-direction: column; align-items: flex-start; }
 
-/* Floating Buttons Modern (Emoji Style) */
+/* Help Button */
+#btnHelp {
+  background: rgba(255,255,255,0.15);
+  border-radius: 50%; width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 1.3em; cursor: pointer;
+  transition: all 0.3s ease;
+}
+#btnHelp:hover { background: #1e90ff; }
+
+/* Floating Buttons */
 .floating-btn {
   position: absolute; width: 50px; height: 50px;
   border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -43,18 +54,56 @@ html, body, #viewDiv {
 #btnMeasurement { top: 310px; right: 10px; }
 #btnElevation { top: 370px; right: 10px; }
 
-/* Clean Side Panels */
+/* Panels */
 .side-panel {
   width: 360px; height: 80%;
-  background: rgba(25,25,25,0.9);
+  background: rgba(25,25,25,0.95);
   position: absolute; top: 70px; right: -380px;
   border-radius: 8px; overflow-y: auto;
-  transition: right 0.4s ease-in-out; padding: 10px;
-  z-index: 110;
+  transition: right 0.4s ease-in-out; padding: 15px;
+  z-index: 110; opacity: 0; transform: translateX(30px);
 }
-.side-panel.open { right: 70px; }
+.side-panel.open { right: 70px; opacity: 1; transform: translateX(0); transition: all 0.4s ease; }
 
-/* Bookmarks items */
+/* Help Panel */
+#helpPanel h3 {
+  margin-top: 0;
+  text-align: center;
+  color: #1e90ff;
+}
+.help-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #2a2a2a;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.help-item:hover { background: #333; }
+.help-icon {
+  font-size: 2em;
+  margin-bottom: 6px;
+}
+.help-desc {
+  text-align: center;
+  color: #ddd;
+  font-size: 0.9em;
+}
+
+/* About section */
+#aboutSection {
+  margin-top: 15px;
+  padding: 12px;
+  border-top: 1px solid #333;
+  color: #ccc;
+  font-size: 0.9em;
+  text-align: center;
+}
+#aboutSection b { color: #1e90ff; }
+
+/* Bookmarks */
 .bookmark-item {
   display: flex; align-items: center; margin-bottom: 8px;
   cursor: pointer; background: #333; padding: 5px; border-radius: 5px;
@@ -74,25 +123,19 @@ html, body, #viewDiv {
   #btnMeasurement { top: 300px; }
   #btnElevation { top: 360px; }
 }
-@media (max-width: 480px) {
-  .side-panel { width: 95%; right: -95%; }
-  .floating-btn { width: 35px; height: 35px; font-size:1em; }
-  #btnBookmarks { top: 50px; right: 5px; }
-  #btnLayers { top: 100px; }
-  #btnLegend { top: 160px; }
-  #btnDaylight { top: 220px; }
-  #btnMeasurement { top: 280px; }
-  #btnElevation { top: 340px; }
-}
 </style>
 </head>
+
 <body>
 <div id="viewDiv"></div>
 
-<!-- Header with title & subtitle -->
+<!-- Header -->
 <div id="header">
-  <h1>Idaho Falls - High Country</h1>
-  <h2>CONCEPT 3_10.16.25</h2>
+  <div id="titleBlock">
+    <h1>Idaho Falls - High Country</h1>
+    <h2>CONCEPT 3_10.16.25</h2>
+  </div>
+  <div id="btnHelp" title="Help">❔</div>
 </div>
 
 <!-- Floating Buttons -->
@@ -103,13 +146,28 @@ html, body, #viewDiv {
 <div id="btnMeasurement" class="floating-btn" title="3D Measurement">📏</div>
 <div id="btnElevation" class="floating-btn" title="Elevation Profile">⛰️</div>
 
-<!-- Side Panels -->
+<!-- Panels -->
 <div id="bookmarksPanel" class="side-panel"></div>
 <div id="layersPanel" class="side-panel"></div>
 <div id="legendPanel" class="side-panel"></div>
 <div id="daylightPanel" class="side-panel"></div>
 <div id="measurementPanel" class="side-panel"></div>
 <div id="elevationPanel" class="side-panel"></div>
+<div id="helpPanel" class="side-panel">
+  <h3>Help Guide</h3>
+  <div class="help-item"><div class="help-icon">🔖</div><div class="help-desc"><b>Bookmarks</b><br>Navigate between pre-defined camera views.</div></div>
+  <div class="help-item"><div class="help-icon">🗺️</div><div class="help-desc"><b>Layers</b><br>Show or hide scene layers and manage visibility.</div></div>
+  <div class="help-item"><div class="help-icon">📋</div><div class="help-desc"><b>Legend</b><br>Displays map symbology and meanings.</div></div>
+  <div class="help-item"><div class="help-icon">☀️</div><div class="help-desc"><b>Daylight</b><br>Adjust sunlight and shadow simulation.</div></div>
+  <div class="help-item"><div class="help-icon">📏</div><div class="help-desc"><b>Measurement</b><br>Measure 3D distances interactively.</div></div>
+  <div class="help-item"><div class="help-icon">⛰️</div><div class="help-desc"><b>Elevation Profile</b><br>Draw a path to view terrain elevation.</div></div>
+  <div id="aboutSection">
+    <p><b>GeoBIM Viewer</b><br>
+    Version 3.0 — Nov 2025<br>
+    Developed by <b>Luiz Amadeu Coutinho</b><br>
+    © TransformXD</p> <a href="https://transformxd.com/" target="_blank">TransformXD</a>
+  </div>
+</div>
 
 <script>
 require([
@@ -137,13 +195,11 @@ require([
     btnElevation: { panelId:"elevationPanel", widget: elevationWidget }
   };
 
-  // Assign widgets to panels and toggle
   Object.keys(panels).forEach(btnId => {
     const btn = document.getElementById(btnId);
     const panel = document.getElementById(panels[btnId].panelId);
     const widget = panels[btnId].widget;
     widget.container = panel;
-
     btn.addEventListener("click", ()=>{
       document.querySelectorAll(".side-panel").forEach(p=>{if(p!==panel)p.classList.remove("open");});
       panel.classList.toggle("open");
@@ -151,20 +207,27 @@ require([
     });
   });
 
-  // Bookmarks panel toggle
   const bookmarksPanel = document.getElementById("bookmarksPanel");
   document.getElementById("btnBookmarks").addEventListener("click", ()=>{
     document.querySelectorAll(".side-panel").forEach(p=>{if(p!==bookmarksPanel)p.classList.remove("open");});
     bookmarksPanel.classList.toggle("open");
   });
 
-  // Load slides into bookmarks
+  const helpPanel = document.getElementById("helpPanel");
+  document.getElementById("btnHelp").addEventListener("click", ()=>{
+    document.querySelectorAll(".side-panel").forEach(p=>{if(p!==helpPanel)p.classList.remove("open");});
+    helpPanel.classList.toggle("open");
+  });
+
   webscene.when(()=>{
     if(webscene.presentation?.slides?.length>0){
       webscene.presentation.slides.forEach(slide=>{
-        const div = document.createElement("div"); div.className="bookmark-item";
-        const img = document.createElement("img"); img.src=slide.thumbnail.url;
-        const span = document.createElement("span"); span.textContent=slide.title.text||"Slide";
+        const div = document.createElement("div");
+        div.className="bookmark-item";
+        const img = document.createElement("img");
+        img.src=slide.thumbnail.url;
+        const span = document.createElement("span");
+        span.textContent=slide.title.text||"Slide";
         div.appendChild(img); div.appendChild(span);
         div.onclick=()=>{ slide.applyTo(view); bookmarksPanel.classList.remove("open"); };
         bookmarksPanel.appendChild(div);
@@ -172,7 +235,6 @@ require([
     }
   });
 
-  // Elevation Profile Draw
   function initElevationDraw(){
     view.graphics.removeAll();
     let points=[];
@@ -194,7 +256,6 @@ require([
     });
     observer.observe(document.getElementById("elevationPanel"), { attributes:true, attributeFilter:["class"] });
   }
-
 });
 </script>
 </body>
