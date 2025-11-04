@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Idaho Falls</title>
+<title>3D WebScene Viewer - Modern Dark Responsive</title>
 
 <link rel="stylesheet" href="https://js.arcgis.com/4.34/esri/themes/dark/main.css">
 <script src="https://js.arcgis.com/4.34/"></script>
@@ -12,79 +12,104 @@
 html, body, #viewDiv {
   height: 100%; margin: 0; padding: 0;
   font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #1c1c1c;
 }
 
 /* Header */
 #header {
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 40px; background: #111; color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.2em; z-index: 120; box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  position: absolute; top:0; left:0; right:0;
+  height: 60px; background: #111;
+  color: #fff; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 130; box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
+#header h1 { margin: 0; font-size: 1.4em; }
+#header h2 { margin: 0; font-size: 0.9em; font-weight: normal; color: #aaa; }
 
-/* Floating Buttons */
+/* Floating Buttons Modern (Emoji Style) */
 .floating-btn {
   position: absolute; width: 50px; height: 50px;
-  border-radius: 6px; display: flex; align-items: center; justify-content: center;
-  background: #333; color: #fff; cursor: pointer; font-size: 1.4em;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: rgba(250,250,250,0.85); color: #000; cursor: pointer; font-size: 1.4em;
   box-shadow: 0 3px 6px rgba(0,0,0,0.3); transition: all 0.2s ease-in-out;
   z-index: 120;
 }
-.floating-btn:hover { background: #0079c1; transform: scale(1.1); }
+.floating-btn:hover { background: #1e90ff; color: #fff; transform: scale(1.1); }
 
-#btnBookmarks { top: 60px; right: 10px; }
-#btnLayers { top: 120px; right: 10px; }
-#btnLegend { top: 180px; right: 10px; }
-#btnDaylight { top: 240px; right: 10px; }
-#btnMeasurement { top: 300px; right: 10px; }
-#btnElevation { top: 360px; right: 10px; }
+#btnBookmarks { top: 70px; right: 10px; }
+#btnLayers { top: 130px; right: 10px; }
+#btnLegend { top: 190px; right: 10px; }
+#btnDaylight { top: 250px; right: 10px; }
+#btnMeasurement { top: 310px; right: 10px; }
+#btnElevation { top: 370px; right: 10px; }
 
-/* Side Panels */
+/* Clean Side Panels */
 .side-panel {
-  width: 360px; height: 85%; background: #222222ee; 
-  position: absolute; top: 50px; right: -380px;
-  border-radius: 8px; box-shadow: -2px 0 8px rgba(0,0,0,0.7);
-  overflow-y: auto; transition: right 0.4s ease-in-out; padding: 10px; z-index: 110;
+  width: 360px; height: 80%;
+  background: rgba(25,25,25,0.9);
+  position: absolute; top: 70px; right: -380px;
+  border-radius: 8px; overflow-y: auto;
+  transition: right 0.4s ease-in-out; padding: 10px;
+  z-index: 110;
 }
 .side-panel.open { right: 70px; }
 
-.panel-header {
-  display: flex; justify-content: space-between; align-items: center;
-  font-weight: bold; margin-bottom: 8px;
-}
-.panel-header button {
-  background: transparent; border: none; color: #fff; font-size: 1.2em; cursor: pointer;
-}
-
-/* Bookmarks */
+/* Bookmarks items */
 .bookmark-item {
   display: flex; align-items: center; margin-bottom: 8px;
   cursor: pointer; background: #333; padding: 5px; border-radius: 5px;
 }
-.bookmark-item:hover { background: #0079c1; }
+.bookmark-item:hover { background: #1e90ff; }
 .bookmark-item img { width: 60px; height: 40px; object-fit: cover; margin-right: 8px; border-radius: 3px; }
 .bookmark-item span { color: #fff; font-size: 0.95em; }
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .side-panel { width: 80%; right: -85%; }
+  .floating-btn { width: 40px; height: 40px; font-size:1.2em; }
+  #btnBookmarks { top: 60px; right: 5px; }
+  #btnLayers { top: 120px; }
+  #btnLegend { top: 180px; }
+  #btnDaylight { top: 240px; }
+  #btnMeasurement { top: 300px; }
+  #btnElevation { top: 360px; }
+}
+@media (max-width: 480px) {
+  .side-panel { width: 95%; right: -95%; }
+  .floating-btn { width: 35px; height: 35px; font-size:1em; }
+  #btnBookmarks { top: 50px; right: 5px; }
+  #btnLayers { top: 100px; }
+  #btnLegend { top: 160px; }
+  #btnDaylight { top: 220px; }
+  #btnMeasurement { top: 280px; }
+  #btnElevation { top: 340px; }
+}
 </style>
 </head>
 <body>
 <div id="viewDiv"></div>
-<div id="header">Idaho Falls - Proposed</div>
+
+<!-- Header with title & subtitle -->
+<div id="header">
+  <h1>Idaho Falls - High Country</h1>
+  <h2>CONCEPT 3_10.16.25</h2>
+</div>
 
 <!-- Floating Buttons -->
 <div id="btnBookmarks" class="floating-btn" title="Bookmarks">🔖</div>
-<div id="btnLayers" class="floating-btn" title="Layers">📂</div>
+<div id="btnLayers" class="floating-btn" title="Layers">🗺️</div>
 <div id="btnLegend" class="floating-btn" title="Legend">📋</div>
-<div id="btnDaylight" class="floating-btn" title="Daylight">💡</div>
+<div id="btnDaylight" class="floating-btn" title="Daylight">☀️</div>
 <div id="btnMeasurement" class="floating-btn" title="3D Measurement">📏</div>
 <div id="btnElevation" class="floating-btn" title="Elevation Profile">⛰️</div>
 
-<!-- Panels -->
-<div id="bookmarksPanel" class="side-panel"><div class="panel-header">Bookmarks <button>×</button></div></div>
-<div id="layersPanel" class="side-panel"><div class="panel-header">Layers <button>×</button></div></div>
-<div id="legendPanel" class="side-panel"><div class="panel-header">Legend <button>×</button></div></div>
-<div id="daylightPanel" class="side-panel"><div class="panel-header">Daylight <button>×</button></div></div>
-<div id="measurementPanel" class="side-panel"><div class="panel-header">3D Measurement <button>×</button></div></div>
-<div id="elevationPanel" class="side-panel"><div class="panel-header">Elevation Profile <button>×</button></div></div>
+<!-- Side Panels -->
+<div id="bookmarksPanel" class="side-panel"></div>
+<div id="layersPanel" class="side-panel"></div>
+<div id="legendPanel" class="side-panel"></div>
+<div id="daylightPanel" class="side-panel"></div>
+<div id="measurementPanel" class="side-panel"></div>
+<div id="elevationPanel" class="side-panel"></div>
 
 <script>
 require([
@@ -112,13 +137,13 @@ require([
     btnElevation: { panelId:"elevationPanel", widget: elevationWidget }
   };
 
+  // Assign widgets to panels and toggle
   Object.keys(panels).forEach(btnId => {
     const btn = document.getElementById(btnId);
     const panel = document.getElementById(panels[btnId].panelId);
     const widget = panels[btnId].widget;
     widget.container = panel;
-    // Close button
-    panel.querySelector("button").onclick = ()=>panel.classList.remove("open");
+
     btn.addEventListener("click", ()=>{
       document.querySelectorAll(".side-panel").forEach(p=>{if(p!==panel)p.classList.remove("open");});
       panel.classList.toggle("open");
@@ -126,14 +151,14 @@ require([
     });
   });
 
-  // Bookmarks
+  // Bookmarks panel toggle
   const bookmarksPanel = document.getElementById("bookmarksPanel");
-  bookmarksPanel.querySelector("button").onclick = ()=>bookmarksPanel.classList.remove("open");
   document.getElementById("btnBookmarks").addEventListener("click", ()=>{
     document.querySelectorAll(".side-panel").forEach(p=>{if(p!==bookmarksPanel)p.classList.remove("open");});
     bookmarksPanel.classList.toggle("open");
   });
 
+  // Load slides into bookmarks
   webscene.when(()=>{
     if(webscene.presentation?.slides?.length>0){
       webscene.presentation.slides.forEach(slide=>{
